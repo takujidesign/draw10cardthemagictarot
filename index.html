@@ -56,6 +56,8 @@
 
         .card-wrapper {
             position: relative;
+            width: 120px;
+            height: 216px;
             box-shadow: 0 10px 20px rgba(255, 255, 255, 0.3);
             border-radius: 10px;
             display: flex;
@@ -103,15 +105,6 @@
 
         #draw-again-btn {
             display: none;
-            padding: 10px;
-            margin-top: 20px;
-            background-color: #B8860B;
-            color: white;
-            border: 2px solid #FFD700;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 1.2em;
-            box-shadow: 0 0 15px rgba(218, 165, 32, 0.9);
         }
 
         #shuffling-gif {
@@ -122,10 +115,18 @@
             border-radius: 10px;
         }
 
-        #card-selection, #ok-btn {
-            display: block;
-            margin: 10px 0;
+        #num-cards-selection {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
         }
+
+        #ok-btn {
+            display: none;
+        }
+
     </style>
 </head>
 <body>
@@ -133,18 +134,24 @@
     <div class="container">
         <h1>The Magic Tarot</h1>
         <p id="draw-status">เลือกจำนวนไพ่ที่ต้องการสุ่ม</p>
+        
+        <!-- ตัวเลือกจำนวนไพ่ -->
+        <div id="num-cards-selection">
+            <label><input type="radio" name="numCards" value="3"> 3 ใบ</label>
+            <label><input type="radio" name="numCards" value="5"> 5 ใบ</label>
+            <label><input type="radio" name="numCards" value="10"> 10 ใบ</label>
+        </div>
+        
+        <!-- ปุ่มตกลง -->
+        <button id="ok-btn" onclick="confirmSelection()">ตกลง / OK</button>
 
-        <select id="card-selection">
-            <option value="1">1 ใบ</option>
-            <option value="3">3 ใบ</option>
-            <option value="5">5 ใบ</option>
-            <option value="10">10 ใบ</option>
-        </select>
-
-        <button id="ok-btn" onclick="startDraw()">ตกลง / OK</button>
+        <!-- ปุ่มสุ่มไพ่มีรูปภาพ -->
+        <button id="draw-btn" onclick="drawCard()" style="display:none">
+            Draw a Card
+            <img src="images/card_back.jpg" alt="Card Back">
+        </button>
 
         <button id="draw-again-btn" onclick="resetPage()">ทำนายอีกครั้ง / Draw Again</button>
-
         <img id="shuffling-gif" src="images/shuffling.gif" alt="Shuffling Cards">
 
         <div id="tarot-card"></div>
@@ -232,65 +239,68 @@
             { name: 'King of Pentacles', img: 'images/king_of_pentacles.jpg' }
         ];
 
-        let selectedCards = [];
+       let selectedCards = [];
         let drawCount = 0;
-        let cardCount = 1;
+        let totalCards = 0;
 
-        function startDraw() {
-            const selection = document.getElementById('card-selection');
-            cardCount = parseInt(selection.value);
-            
-            // ซ่อนตัวเลือกและปุ่ม OK
-            selection.style.display = 'none';
-            document.getElementById('ok-btn').style.display = 'none';
+        function confirmSelection() {
+            const radios = document.getElementsByName('numCards');
+            for (let i = 0; i < radios.length; i++) {
+                if (radios[i].checked) {
+                    totalCards = parseInt(radios[i].value);
+                    break;
+                }
+            }
 
-            drawCard();
+            if (totalCards > 0) {
+                document.getElementById('num-cards-selection').style.display = 'none';
+                document.getElementById('ok-btn').style.display = 'none';
+                document.getElementById('draw-btn').style.display = 'flex';
+                document.getElementById('draw-status').textContent = `จับไพ่ใบที่ 1`;
+            }
         }
 
         function drawCard() {
-            const tarotCardsDiv = document.getElementById('tarot-card');
+            const drawButton = document.getElementById('draw-btn');
             const shufflingGif = document.getElementById('shuffling-gif');
-
-            // ซ่อนปุ่มและแสดง GIF สับไพ่
-            document.getElementById('draw-again-btn').style.display = 'none';
+            const tarotCardsDiv = document.getElementById('tarot-card');
+            
+            drawButton.style.display = 'none';
             shufflingGif.style.display = 'block';
 
-            // รอ 2 วินาทีก่อนสุ่มไพ่
             setTimeout(function() {
                 shufflingGif.style.display = 'none';
+
                 let card;
                 do {
                     const randomIndex = Math.floor(Math.random() * tarotDeck.length);
                     card = tarotDeck[randomIndex];
                 } while (selectedCards.some(selected => selected.name === card.name));
 
-                const isReversed = Math.random() < 0.3;
+                const isReversed = Math.random() < 0.2;
                 selectedCards.push({ ...card, isReversed });
                 drawCount++;
 
-                let cardSize = 100;
-                if (cardCount === 1) {
-                    cardSize = 150;
-                } else if (cardCount === 3) {
-                    cardSize = 130;
-                } else if (cardCount === 5) {
-                    cardSize = 120;
-                }
+                let cardSize = 120;
+                if (totalCards === 3) cardSize *= 1.3; 
+                if (totalCards === 5) cardSize *= 1.2;
 
                 tarotCardsDiv.innerHTML += `
-                    <div class="card-container">
-                        <div class="card-wrapper" style="width: ${cardSize}px; height: ${cardSize * 1.8}px;">
+                    <div class="card-container" style="width:${cardSize}px; height:${cardSize * 1.8}px;">
+                        <div class="card-wrapper">
                             <img class="card ${isReversed ? 'reversed' : ''}" src="${card.img}" alt="${card.name}">
                         </div>
                         <div class="card-number">${drawCount}</div>
                     </div>
                 `;
 
-                if (drawCount < cardCount) {
-                    drawCard();
+                if (drawCount < totalCards) {
+                    drawButton.style.display = 'flex';
+                    document.getElementById('draw-status').textContent = `จับไพ่ใบที่ ${drawCount + 1}`;
                 } else {
+                    drawButton.style.display = 'none';
                     document.getElementById('draw-again-btn').style.display = 'block';
-                    document.getElementById('draw-status').textContent = 'ทำนายเสร็จแล้ว';
+                    document.getElementById('draw-status').textContent = 'คุณจับไพ่ครบแล้ว';
                 }
             }, 2000);
         }
@@ -298,10 +308,12 @@
         function resetPage() {
             selectedCards = [];
             drawCount = 0;
+            totalCards = 0;
             document.getElementById('tarot-card').innerHTML = '';
             document.getElementById('draw-again-btn').style.display = 'none';
-            document.getElementById('card-selection').style.display = 'block';
+            document.getElementById('num-cards-selection').style.display = 'flex';
             document.getElementById('ok-btn').style.display = 'block';
+            document.getElementById('draw-btn').style.display = 'none';
             document.getElementById('draw-status').textContent = 'เลือกจำนวนไพ่ที่ต้องการสุ่ม';
         }
 
