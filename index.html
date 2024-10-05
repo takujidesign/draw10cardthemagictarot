@@ -137,9 +137,9 @@
         
         <!-- ตัวเลือกจำนวนไพ่ -->
         <div id="num-cards-selection">
-            <label><input type="radio" name="numCards" value="3"> 3 ใบ</label>
-            <label><input type="radio" name="numCards" value="5"> 5 ใบ</label>
-            <label><input type="radio" name="numCards" value="10"> 10 ใบ</label>
+            <label><input type="radio" name="numCards" value="3" onclick="showOkButton()"> 3 ใบ</label>
+            <label><input type="radio" name="numCards" value="5" onclick="showOkButton()"> 5 ใบ</label>
+            <label><input type="radio" name="numCards" value="10" onclick="showOkButton()"> 10 ใบ</label>
         </div>
         
         <!-- ปุ่มตกลง -->
@@ -242,6 +242,10 @@
        let selectedCards = [];
         let drawCount = 0;
         let totalCards = 0;
+
+        function showOkButton() {
+            document.getElementById('ok-btn').style.display = 'block';
+        }
 
         function confirmSelection() {
             const radios = document.getElementsByName('numCards');
