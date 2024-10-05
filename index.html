@@ -142,6 +142,17 @@
             border-radius: 10px;
         }
 
+        select {
+            margin-top: 10px;
+            font-size: 1.2em;
+            padding: 10px;
+            background-color: #B8860B; /* สีทองเข้ม */
+            color: white;
+            border: 2px solid #FFD700;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
     </style>
 </head>
 <body>
@@ -149,7 +160,15 @@
     <!-- กล่องเนื้อหาสำหรับสุ่มไพ่ -->
     <div class="container">
         <h1>The Magic Tarot</h1>
-        <p id="draw-status">ทำนายไพ่ 10 ใบ จับไพ่ใบที่ 1</p>
+        <p id="draw-status">เลือกจำนวนไพ่ที่ต้องการสุ่มแล้วกดปุ่ม</p>
+
+        <!-- Dropdown ให้เลือกจำนวนไพ่ -->
+        <select id="card-count-select">
+            <option value="1">1 ใบ</option>
+            <option value="3">3 ใบ</option>
+            <option value="5">5 ใบ</option>
+            <option value="10">10 ใบ</option>
+        </select>
         
         <!-- ปุ่มสุ่มไพ่มีรูปภาพ -->
         <button id="draw-btn" onclick="drawCard()">
@@ -250,12 +269,16 @@
 
         let selectedCards = [];
         let drawCount = 0;
+        let maxCardsToDraw = 10; // ค่าเริ่มต้นคือสุ่ม 10 ใบ
 
         function drawCard() {
             const drawButton = document.getElementById('draw-btn');
             const shufflingGif = document.getElementById('shuffling-gif');
             const drawAgainButton = document.getElementById('draw-again-btn');
             const tarotCardsDiv = document.getElementById('tarot-card');
+            const cardCountSelect = document.getElementById('card-count-select');
+
+            maxCardsToDraw = parseInt(cardCountSelect.value); // ดึงค่าจาก dropdown
 
             // ซ่อนปุ่มตอนแสดง GIF สับไพ่
             drawButton.style.display = 'none';
@@ -291,12 +314,12 @@
                 drawButton.disabled = false; // เปิดการใช้งานปุ่มอีกครั้ง
 
                 // เปลี่ยนข้อความแสดงสถานะการจับไพ่
-                if (drawCount < 10) {
+                if (drawCount < maxCardsToDraw) {
                     document.getElementById('draw-status').textContent = `จับไพ่ใบที่ ${drawCount + 1}`;
                 } else {
-                    drawButton.style.display = 'none'; // ซ่อนปุ่มสุ่มไพ่หลังจากสุ่มครบ 10 ครั้ง
+                    drawButton.style.display = 'none'; // ซ่อนปุ่มสุ่มไพ่หลังจากสุ่มครบตามจำนวนที่เลือก
                     drawAgainButton.style.display = 'block'; // แสดงปุ่ม "ทำนายอีกครั้ง"
-                    document.getElementById('draw-status').textContent = 'คุณจับไพ่ครบ 10 ใบแล้ว';
+                    document.getElementById('draw-status').textContent = `คุณจับไพ่ครบ ${maxCardsToDraw} ใบแล้ว`;
                 }
             }, 2000); // ตั้งเวลาให้รอ 2 วินาทีเพื่อจำลองการ "Shuffle"
         }
