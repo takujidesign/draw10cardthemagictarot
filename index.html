@@ -25,6 +25,9 @@
             border-radius: 15px;
             box-shadow: 0 4px 20px rgba(255, 255, 255, 0.2);
             max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         h1 {
@@ -85,9 +88,10 @@
             border-radius: 3px;
         }
 
+        /* ปรับลดขนาดปุ่มสุ่มไพ่ลง 50% */
         button {
-            padding: 15px;
-            font-size: 1.2em;
+            padding: 7px;
+            font-size: 0.8em;
             background-color: #B8860B;
             color: white;
             border: 2px solid #FFD700;
@@ -96,6 +100,17 @@
             margin-top: 20px;
             transition: background-color 0.3s ease;
             box-shadow: 0 0 15px rgba(218, 165, 32, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        button img {
+            width: 95px; /* ลดขนาดลง 50% */
+            height: 158px; /* ลดขนาดลง 50% */
+            margin-top: 5px;
+            border-radius: 10px;
         }
 
         button:hover {
@@ -127,16 +142,24 @@
             display: none;
         }
 
+        /* จัดให้องค์ประกอบทั้งหมดอยู่ตรงกลาง */
+        .centered {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
     </style>
 </head>
 <body>
 
-    <div class="container">
+    <div class="container centered">
         <h1>The Magic Tarot</h1>
         <p id="draw-status">เลือกจำนวนไพ่ที่ต้องการสุ่ม</p>
         
         <!-- ตัวเลือกจำนวนไพ่ -->
-        <div id="num-cards-selection">
+        <div id="num-cards-selection" class="centered">
             <label><input type="radio" name="numCards" value="3" onclick="showOkButton()"> 3 ใบ</label>
             <label><input type="radio" name="numCards" value="5" onclick="showOkButton()"> 5 ใบ</label>
             <label><input type="radio" name="numCards" value="10" onclick="showOkButton()"> 10 ใบ</label>
